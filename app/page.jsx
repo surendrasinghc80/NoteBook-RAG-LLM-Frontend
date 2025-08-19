@@ -1,31 +1,31 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Settings, Share, Grid3X3, X, Brain, Moon, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
-import { SourcesPanel } from "@/components/sources-panel"
-import { AddSourcesModal } from "@/components/add-sources-modal"
-import { ChatInterface } from "@/components/chat-interface"
-import { StudioPanel } from "@/components/studio-panel"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Settings, Share, Grid3X3, X, Brain, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import { SourcesPanel } from "@/components/sources-panel";
+import { AddSourcesModal } from "@/components/add-sources-modal";
+import { ChatInterface } from "@/components/chat-interface";
+import { StudioPanel } from "@/components/studio-panel";
 
 export default function NotebookLM() {
-  const [showAddSources, setShowAddSources] = useState(false)
-  const [sources, setSources] = useState([])
-  const { theme, setTheme } = useTheme()
+  const [showAddSources, setShowAddSources] = useState(false);
+  const [sources, setSources] = useState([]);
+  const { theme, setTheme } = useTheme();
 
   const handleAddSources = (newSources) => {
-    setSources((prev) => [...prev, ...newSources])
-  }
+    setSources((prev) => [...prev, ...newSources]);
+  };
 
   const handleDeleteSource = (sourceId) => {
-    setSources((prev) => prev.filter((source) => source.id !== sourceId))
-  }
+    setSources((prev) => prev.filter((source) => source.id !== sourceId));
+  };
 
   const handleSendMessage = (message) => {
     // Handle message sending logic here
-    console.log("Sending message:", message)
-  }
+    console.log("Sending message:", message);
+  };
 
   return (
     <div className="min-h-screen relative">
@@ -58,20 +58,40 @@ export default function NotebookLM() {
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className="text-white hover:bg-white/10"
             >
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {theme === "dark" ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )}
             </Button>
-            <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-white hover:bg-white/10"
+            >
               <Share className="h-4 w-4 mr-2" />
               Share
             </Button>
-            <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-white hover:bg-white/10"
+            >
               <Settings className="h-4 w-4 mr-2" />
               Settings
             </Button>
-            <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-white hover:bg-white/10"
+            >
               <Grid3X3 className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-white hover:bg-white/10"
+            >
               <X className="h-4 w-4" />
             </Button>
           </div>
@@ -102,5 +122,5 @@ export default function NotebookLM() {
         onAddSources={handleAddSources}
       />
     </div>
-  )
+  );
 }
