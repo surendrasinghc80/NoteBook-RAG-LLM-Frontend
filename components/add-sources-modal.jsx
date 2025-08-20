@@ -21,6 +21,52 @@ import {
 import { useDropzone } from "react-dropzone";
 import { apiService } from "@/lib/api-service";
 
+// Configuration for source types
+const sourceTypes = [
+  {
+    id: "google-drive",
+    name: "Google Drive",
+    icon: FolderOpen,
+    available: false,
+    onClick: () => console.log("Google Drive integration coming soon"),
+  },
+  {
+    id: "google-docs",
+    name: "Google Docs",
+    icon: FileText,
+    available: false,
+    onClick: () => console.log("Google Docs integration coming soon"),
+  },
+  {
+    id: "google-slides",
+    name: "Google Slides",
+    icon: Presentation,
+    available: false,
+    onClick: () => console.log("Google Slides integration coming soon"),
+  },
+  {
+    id: "website",
+    name: "Website",
+    icon: Globe,
+    available: true,
+    onClick: () => "link",
+  },
+  {
+    id: "youtube",
+    name: "YouTube",
+    icon: Youtube,
+    available: true,
+    onClick: () => "link",
+  },
+  {
+    id: "clipboard",
+    name: "Clipboard",
+    icon: Copy,
+    available: true,
+    onClick: () => "text",
+  },
+];
+
 export function AddSourcesModal({ isOpen, onClose, onAddSources }) {
   const [activeTab, setActiveTab] = useState("upload");
   const [urlInput, setUrlInput] = useState("");
@@ -241,17 +287,29 @@ export function AddSourcesModal({ isOpen, onClose, onAddSources }) {
             onValueChange={setActiveTab}
             className="w-full"
           >
-            <TabsList className="grid w-full grid-cols-4 bg-gray-800">
-              <TabsTrigger value="upload" className="text-white">
+            <TabsList className="grid w-full grid-cols-4 bg-muted">
+              <TabsTrigger
+                value="upload"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
                 Upload
               </TabsTrigger>
-              <TabsTrigger value="link" className="text-white">
+              <TabsTrigger
+                value="link"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
                 Link
               </TabsTrigger>
-              <TabsTrigger value="text" className="text-white">
+              <TabsTrigger
+                value="text"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
                 Text
               </TabsTrigger>
-              <TabsTrigger value="integrations" className="text-white">
+              <TabsTrigger
+                value="integrations"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
                 Integrations
               </TabsTrigger>
             </TabsList>
@@ -365,48 +423,35 @@ export function AddSourcesModal({ isOpen, onClose, onAddSources }) {
 
             <TabsContent value="integrations" className="mt-6">
               <div className="grid grid-cols-3 gap-4">
-                <Button
-                  variant="outline"
-                  className="flex flex-col items-center gap-2 h-auto p-4 bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
-                >
-                  <FolderOpen className="h-5 w-5" />
-                  <span className="text-sm">Google Drive</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex flex-col items-center gap-2 h-auto p-4 bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
-                >
-                  <FileText className="h-5 w-5" />
-                  <span className="text-sm">Google Docs</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex flex-col items-center gap-2 h-auto p-4 bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
-                >
-                  <Presentation className="h-5 w-5" />
-                  <span className="text-sm">Google Slides</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex flex-col items-center gap-2 h-auto p-4 bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
-                >
-                  <Globe className="h-5 w-5" />
-                  <span className="text-sm">Website</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex flex-col items-center gap-2 h-auto p-4 bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
-                >
-                  <Youtube className="h-5 w-5" />
-                  <span className="text-sm">YouTube</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex flex-col items-center gap-2 h-auto p-4 bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
-                >
-                  <Copy className="h-5 w-5" />
-                  <span className="text-sm">Clipboard</span>
-                </Button>
+                {sourceTypes.map((sourceType) => {
+                  const IconComponent = sourceType.icon;
+                  return (
+                    <Button
+                      key={sourceType.id}
+                      variant="outline"
+                      className={`flex flex-col items-center gap-2 h-auto p-4 bg-gray-800 border-gray-600 text-white hover:bg-gray-700 ${
+                        !sourceType.available
+                          ? "opacity-60 cursor-not-allowed"
+                          : ""
+                      }`}
+                      onClick={() => {
+                        const targetTab = sourceType.onClick();
+                        if (targetTab) {
+                          setActiveTab(targetTab);
+                        }
+                      }}
+                      disabled={!sourceType.available}
+                    >
+                      <IconComponent className="h-5 w-5" />
+                      {!sourceType.available && (
+                        <span className="text-sm text-red-500">
+                          Not Available
+                        </span>
+                      )}
+                      <span className="text-sm">{sourceType.name}</span>
+                    </Button>
+                  );
+                })}
               </div>
             </TabsContent>
           </Tabs>
