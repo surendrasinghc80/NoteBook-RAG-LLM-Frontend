@@ -1,6 +1,7 @@
 import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { ThemeProvider } from "@/components/theme-provider"
+import { PersistentDataProvider } from "@/contexts/PersistentDataContext"
 import "./globals.css"
 
 export const metadata = {
@@ -23,7 +24,9 @@ html {
       </head>
       <body>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          {children}
+          <PersistentDataProvider>
+            {children}
+          </PersistentDataProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -8,18 +8,19 @@ import { SourcesPanel } from "@/components/sources-panel";
 import { AddSourcesModal } from "@/components/add-sources-modal";
 import { ChatInterface } from "@/components/chat-interface";
 import { StudioPanel } from "@/components/studio-panel";
+import { usePersistentData } from "@/contexts/PersistentDataContext";
 
 export default function NotebookLM() {
   const [showAddSources, setShowAddSources] = useState(false);
-  const [sources, setSources] = useState([]);
   const { theme, setTheme } = useTheme();
+  const { sources, addSources, deleteSource, isLoaded } = usePersistentData();
 
   const handleAddSources = (newSources) => {
-    setSources((prev) => [...prev, ...newSources]);
+    addSources(newSources);
   };
 
   const handleDeleteSource = (sourceId) => {
-    setSources((prev) => prev.filter((source) => source.id !== sourceId));
+    deleteSource(sourceId);
   };
 
   const handleSendMessage = (message) => {
@@ -64,7 +65,7 @@ export default function NotebookLM() {
                 <Moon className="h-4 w-4" />
               )}
             </Button>
-            <Button
+            {/* <Button
               variant="ghost"
               size="sm"
               className="text-white hover:bg-white/10"
@@ -93,7 +94,7 @@ export default function NotebookLM() {
               className="text-white hover:bg-white/10"
             >
               <X className="h-4 w-4" />
-            </Button>
+            </Button> */}
           </div>
         </header>
 

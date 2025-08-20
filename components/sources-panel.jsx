@@ -199,7 +199,7 @@ export function SourcesPanel({ sources, onAddSources, onDeleteSource, onShowAddM
                                   <span className="text-white/40 text-xs">{formatFileSize(source.size)}</span>
                                 </div>
                                 <p className="text-white/40 text-xs mt-1">
-                                  Added {source.uploadedAt.toLocaleDateString()}
+                                  Added {source.uploadedAt ? new Date(source.uploadedAt).toLocaleDateString() : 'Unknown date'}
                                 </p>
                                 {source.metadata && (
                                   <p className="text-white/40 text-xs">

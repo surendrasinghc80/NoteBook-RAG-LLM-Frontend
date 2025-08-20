@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 import { apiService } from "@/lib/api-service";
 import ReactMarkdown from "react-markdown";
 import CodeBlock from "@/components/CodeBlock";
+import { usePersistentData } from "@/contexts/PersistentDataContext";
 
 const TypingIndicator = ({ stage = "thinking" }) => {
   const stages = {
@@ -222,7 +223,7 @@ const MessageBubble = ({ message, onCopy, onRegenerate, onFeedback }) => {
             >
               <RefreshCw className="h-3 w-3" />
             </Button>
-            <Button
+            {/* <Button
               variant="ghost"
               size="sm"
               onClick={() => onFeedback(message.id, "up")}
@@ -237,7 +238,7 @@ const MessageBubble = ({ message, onCopy, onRegenerate, onFeedback }) => {
               className="h-6 px-2 text-white/60 hover:text-white hover:bg-white/10"
             >
               <ThumbsDown className="h-3 w-3" />
-            </Button>
+            </Button> */}
           </div>
         )}
       </div>
@@ -254,7 +255,7 @@ const MessageBubble = ({ message, onCopy, onRegenerate, onFeedback }) => {
 };
 
 export function ChatInterface({ sources, onSendMessage }) {
-  const [messages, setMessages] = useState([]);
+  const { messages, addMessage, updateMessage, setMessages, clearMessages, isLoaded } = usePersistentData();
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [typingStage, setTypingStage] = useState("thinking");
@@ -282,7 +283,7 @@ export function ChatInterface({ sources, onSendMessage }) {
       timestamp: new Date(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    addMessage(userMessage);
     const currentQuery = inputValue;
     setInputValue("");
     setIsTyping(true);
@@ -387,7 +388,7 @@ export function ChatInterface({ sources, onSendMessage }) {
             },
           };
 
-          setMessages((prev) => [...prev, aiMessage]);
+          addMessage(aiMessage);
         } catch (error) {
           console.error("Error generating response:", error);
 
@@ -400,7 +401,7 @@ export function ChatInterface({ sources, onSendMessage }) {
             error: true,
           };
 
-          setMessages((prev) => [...prev, errorMessage]);
+          addMessage(errorMessage);
         } finally {
           setIsTyping(false);
         }
@@ -533,11 +534,7 @@ export function ChatInterface({ sources, onSendMessage }) {
             },
           };
 
-          setMessages((prev) => {
-            const newMessages = [...prev];
-            newMessages[messageIndex] = newAiMessage;
-            return newMessages;
-          });
+          updateMessage(messageId, newAiMessage);
         } catch (error) {
           console.error("Error regenerating response:", error);
 
@@ -550,11 +547,7 @@ export function ChatInterface({ sources, onSendMessage }) {
             error: true,
           };
 
-          setMessages((prev) => {
-            const newMessages = [...prev];
-            newMessages[messageIndex] = errorMessage;
-            return newMessages;
-          });
+          updateMessage(messageId, errorMessage);
         } finally {
           setIsTyping(false);
         }
@@ -589,6 +582,16 @@ export function ChatInterface({ sources, onSendMessage }) {
         <div className="flex items-center justify-between">
           <h2 className="text-white font-medium">Chat</h2>
           <div className="flex items-center gap-2">
+            {messages.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearMessages}
+                className="text-white/60 hover:text-white hover:bg-white/10 text-xs"
+              >
+                Clear Chat
+              </Button>
+            )}
             {processedSources.length > 0 && ragStats && (
               <Badge variant="secondary" className="text-xs">
                 {ragStats.totalChunks} chunks ready
@@ -604,13 +607,21 @@ export function ChatInterface({ sources, onSendMessage }) {
         {processedSources.length > 0 && ragStats && (
           <p className="text-white/40 text-xs mt-1">
             RAG system ready • {ragStats.avgChunkSize} avg words per chunk
+            {messages.length > 0 && ` • ${messages.length} messages stored`}
           </p>
         )}
       </div>
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto">
-        {!hasMessages && sources.length === 0 ? (
+        {!isLoaded ? (
+          <div className="flex-1 flex items-center justify-center p-8">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+              <p className="text-white/60 text-sm">Loading chat history...</p>
+            </div>
+          </div>
+        ) : !hasMessages && sources.length === 0 ? (
           <div className="flex-1 flex items-center justify-center p-8">
             <div className="text-center">
               <MessageSquare className="h-12 w-12 text-white/40 mx-auto mb-4" />
@@ -742,7 +753,7 @@ export function ChatInterface({ sources, onSendMessage }) {
             size="sm"
             onClick={handleSend}
             disabled={!canSendMessage}
-            className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 h-11 px-4"
+            className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 mb-2.5 h-11 px-4"
           >
             <Send className="h-4 w-4" />
           </Button>
